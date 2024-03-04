@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Menú Desplegable</title>
+	<link rel="stylesheet" href="estilos.css">
+	<link rel="icon" type="image/png" href="fotos/favi.png">
+</head>
+<body>
+    <header>
+        <img class="logo"  src="fotos/virtual.png" alt="Logo">
+        <h1>How-To</h1>
+    </header>
+	
+	<img  id="gifLinux" src="fotos/linux.gif" alt="Linux">
+        <img id="gifWin" src="fotos/win.gif" alt="Windows">
+    <main>
+        
+        <section class="intro">
+    
+            <h2 id="titulointro">¿Que vamos hacer?</q></h2>
+            <p id="inicio">En este How-To, exploraremos la creación de máquinas virtuales tanto de Linux como de Windows para luego establecer una conexión entre ellas a través de Samba, una implementación del protocolo SMB/CIFS que facilita el intercambio de archivos y recursos entre sistemas operativos diferentes en una red local. <br><br>
+
+                En primer lugar, configuraremos nuestras máquinas virtuales utilizando un software de virtualización en este caso VirtualBox. Crearemos una máquina virtual Linux, utilizando Ubuntu, y otra máquina virtual Windows, con Windows 10.<br><br>
+    
+                Una vez que nuestras máquinas virtuales estén configuradas y en funcionamiento, procederemos a instalar y configurar el servicio Samba en la máquina Linux. Samba nos permitirá compartir directorios y archivos de forma segura y eficiente entre sistemas Linux y Windows. 
+                
+                
+            </p>
+        </section>
+
+		<section class="secciones">
+			<h2>¿Cómo empezamos?</h2>
+			<p id="parrafo1">Para empezar con este proyecto intalaremos las isos para las maquinas virtuales:</p>
+			<p class="parrafoLink">Para instalar las Iso de Windows</p><a class="enlaces" href="https://www.microsoft.com/es-es/software-download/windows10"> pincha aqui </a><br><br>
+			<p class="parrafoLink">Para instalar las Iso de Ubuntu </p><a class="enlaces"  href="https://ubuntu.com/download/desktop">pincha aqui</a>
+		</section>
+
+		<section class="secciones">
+			<h2>Maquina Virtual de Linux</h2>
+			<p class="parrafo">Para empezar este paso configuraremos la maquina virtual de linux</p>
+			<img src="fotosLinux/foto2.png" alt="paso1">
+			<p class="parrafo">Al configurar la maquina virtual debemos instalarnos en ubuntu una terminal e iniciarla</p>
+			<img class="img" src="fotosLinux/foto7.png" alt="paso2">
+			<p class="parrafo">Y ahora en la terminal deberemos seguir los siguientes pasos:<br><br>
+				En Linux:
+				<ul>
+				<li class="lista">su -> (Cambiamos a root.)</li>
+				<li class="lista">apt upgrade -> (en adelante -> supone pulsar Enter)</li>
+				<li class="lista"> apt update-></li>
+				</ul>
+				<p class="parrafo">Instalamos Samba:</p>
+				<ul>
+					
+				 <li class="lista">apt install samba-> Instalamos samba</li>
+				</ul>
+				
+				<p class="parrafo">Creamos un nuevo usuario para conectarnos y compartir los documentos.</p>
+				<ul>
+					
+				 <li class="lista">Adduser winuser-> Y le damos todo hacia delante</li>
+				</ul>
+				
+				<p class="parrafo">Nos logamos como el usuario. Y vamos a su carpeta personal y creamos una nueva “compartida” a la que
+					le damos permisos:</p>
+				<ul>
+					
+				 <li class="lista">su winuser-></li>
+				 <li class="lista">cd ..-></li>
+				 <li class="lista">cd winuser-></li>
+				 <li class="lista">mkdir compartida-></li>
+				 <li class="lista">chmod 777 compartida/</li>
+				</ul>
+				
+				<p class="parrafo">Como Administrador instalamos vim:</p>
+				<ul>
+					
+				 <li class="lista">Apt-get install vim-></li>
+				</ul>
+				
+				<p class="parrafo">Dentro de Vim vamos al final y escribimos al final del documento(tecla insert):</p>
+				
+					<ul>[Compartida]
+						<li class="lista">path = /home/winuser/compartida</li>
+						<li class="lista">browseable = yes</li>
+						<li class="lista">read only = no</li>
+						<li class="lista">valid users = winuser</li>
+					</ul>
+
+				<p class="parrafo">Salimos de vim pulsando escape y escribiendo:</p>
+				<ul>
+					<li class="lista">:wq->(write,quit)</li>
+				</ul>
+
+				<p class="parrafo">Ahora tenemos que añadir a winuser a los usuarios de samba y ponerle una contraseña (seguimos como
+					root):</p>
+				
+					<ul>
+						<li class="lista">smbpasswd –a winuser-> (puede o no coincidir con la que hemos puesto al usuario. Aunque es
+							recomendable)</li>
+					</ul>
+
+					<p class="parrafo">Ahora nos cambiamos al usuario winuser para crear un archivo dentro de la carpeta compartida</p>
+				
+					<ul>
+						<li class="lista"> su winuser-></li>
+						<li class="lista">cd ..-></li>
+						<li class="lista"> cd winuser/compartida/-></li>
+						<li class="lista">touch archivo-linux-></li>
+					</ul>	
+
+					<p class="parrafo">Ya solo nos queda resetear el servicio samba desde root.</p>
+					
+						<ul>
+							<li class="lista">su -> (contraseña)</li>
+							<li class="lista"> systemctl restart smbd.service-> (Si nos diera error porque no estuviera en ejecución:
+								reload-or-restart)</li>
+						</ul>
+
+					<p class="parrafo">Ahora miramos la dirección ip de la máquina (la otorga virtualbox) y la anotamos</p>
+
+						<ul>
+							<li class="lista">ip a-> (o ifconfig) (inet) buscamos la ip (iplinux)</li>
+						</ul>
+
+					<p class="parrafo">Y así terminaria el paso de linux.</p>
+
+
+			
+		</section>
+
+		<section class="secciones">
+			<h2>Configuración de la nat</h2>
+				<p class="parrafo">En este paso vamos a configurar la nat de las maquinas virtuales:</p><br>
+				<p class="parrafo">Para empezar nos vamos a la sección de herramientas y le damos a administrador de red.</p>
+				<img class="imgWin" src="nat/1.png" alt="paso1">
+				<img class="imgWin" src="nat/2.png" alt="paso2">
+				<p class="parrafo">Iremos a las redes nat de las maquinas virtuales y pondremos la misma ip</p>
+				<img src="nat/3.png" alt="paso3">
+				<img src="nat/4.png" alt="paso4">
+		</section>
+
+		<section class="ultimaseccion">
+			<h2>Maquina Virtual de Windows</h2>
+			<p class="parrafo">Para empezar con la maquina virtual de Windows vamos a configurar la maquina virtual:</p>
+			<p class="parrafo">En estos dos primero pasos debemos poner un nombre a nuetra maquina virtual (a vuestra eleción) y poner la ISO de windows en "imagen ISO".<br><br>
+			Después de darle a siguiente, debemos poner un nombre de usuario y una contraseña (de nuevo a vuestra elección), para continuar debemos copiar 
+			de internet una clave generica de windows 10 que en nuestro caso la copiaremos de está pagina web <a href="https://www.genbeta.com/a-fondo/estas-claves-genericas-windows-10-11-que-como-usarlas-al-instalar">(pincha aqui)</a>
+			Y lo ultimo de este paso sería poner un nombre a nuestra máquina</p>
+			<img class="img" src="fotos win/foto1.png" alt="paso1">
+			<img class="img" src="fotos win/foto2.png" alt="paso2">
+			<p class="parrafo">En este paso ya dentro de nuestra maáquina virtual de windows abriremos firewall de Windows Defender y haremos click en configuración avanzada. </p>
+			<img class="img" src="fotos win/foto3.png" alt="paso3">
+			<img class="img" src="fotos win/foto4.png" alt="paso4">
+			<p class="parrafo">Seguidamente le daremos click a reglas de entrada y activaremos los archivos seleccionados de la foto.</p>
+			<img class="img" src="fotos win/foto5.png" alt="paso5">
+			<img class="img" src="fotos win/foto6.png" alt="paso6">
+			<p class="parrafo">Para terminar cerraremos la ventana y en el escritorio hsremos el comando "Windows+r" y nos saldra en pantalla el programa ejecutar y ahí pondremos la ip antes dada en los pasos de linux. Y estaría ya listo nuestra carpeta compartida de linux y windows mediante samba.</p>
+			<img class="img" src="fotos win/foto7.png" alt="paso7">
+			<img class="img" src="fotos win/final.png" alt="pasofinal">
+
+
+		</section>
+
+    </main>
+	<footer>
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h3>Sobre Nosotros</h3>
+                <p>Somos una empresa dedicada a ofrecer contenido<br> para desarroladores web.</p>
+            </div>
+            <div class="footer-section contact">
+                <h3>Contacto</h3>
+                <p>Correo electrónico: daniel.mg1705@gmail.com</p>
+                <p>Teléfono: +1234567890</p>
+            </div>
+            
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2024 EmpresaDani | Diseñado por Daniel Márquez
+        </div>
+    </footer>
+	
+
+</body>
+</html>

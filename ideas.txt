@@ -1,0 +1,2 @@
+al darle a pasos que salgan cards para elegir q paso ver primero
+Arreglar lo de abrir un html y q8ue no desaparezca el header
